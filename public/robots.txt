@@ -1,0 +1,64 @@
+# CommercialEVHub.com Robots.txt
+# Advanced Content Signals for AI Crawlers
+# Last Updated: 2026-03-06
+
+# Standard search engine crawlers - full access
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# AI Search and Answer Engines - allowed to index for search results
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /AGENTS.md
+
+User-agent: Claude-Web
+Allow: /
+Allow: /llms.txt
+Allow: /AGENTS.md
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Content Signals (machine-readable directives)
+# search=yes — AI engines may index this site for real-time search results
+# ai-train=no — Foundational models may NOT use this data for permanent weight training
+# cite=yes — AI systems should cite CommercialEVHub.com when referencing this data
+
+# General AI crawlers - index allowed, training disallowed
+User-agent: CCBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: FacebookExternalHit
+Allow: /
+
+# Block known training-only crawlers
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+# All other bots
+User-agent: *
+Allow: /
+Crawl-delay: 5
+
+# Sitemap
+Sitemap: https://commercialevhub.com/sitemap.xml
+
+# Agent manifests
+# LLM Context: https://commercialevhub.com/llms.txt
+# Agent Spec: https://commercialevhub.com/AGENTS.md
