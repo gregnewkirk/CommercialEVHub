@@ -1,0 +1,461 @@
+import type { Grant, Installer } from "./db/schema";
+
+// Mock grants data for development without DB connection
+// IDs are deterministic UUIDs for consistency
+export const MOCK_GRANTS: Grant[] = [
+  {
+    id: "00000000-0000-0000-0000-000000000001",
+    title: "National Electric Vehicle Infrastructure (NEVI) Formula Program",
+    slug: "nevi-formula-program",
+    description: "The NEVI Formula Program provides $5 billion to states to strategically deploy EV charging infrastructure along designated Alternative Fuel Corridors.",
+    amountMin: 100000000,
+    amountMax: 500000000000,
+    deadline: null,
+    status: "active",
+    sourceUrl: "https://www.fhwa.dot.gov/environment/alternative_fuel_corridors/",
+    funder: "Federal Highway Administration (FHWA)",
+    jurisdiction: "federal",
+    state: null,
+    city: null,
+    utility: null,
+    eligibleEntities: ["municipality", "commercial_fleet", "transit_agency"],
+    eligibleHardware: ["dcfc"],
+    incentiveType: "grant",
+    justice40: true,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000002",
+    title: "Charging and Fueling Infrastructure (CFI) Discretionary Grant Program",
+    slug: "cfi-discretionary-grant-program",
+    description: "A $2.5 billion competitive grant program to deploy EV charging and alternative fueling infrastructure in publicly accessible locations.",
+    amountMin: 500000,
+    amountMax: 100000000,
+    deadline: "2026-06-13",
+    status: "active",
+    sourceUrl: "https://www.fhwa.dot.gov/environment/cfi/",
+    funder: "Federal Highway Administration (FHWA)",
+    jurisdiction: "federal",
+    state: null,
+    city: null,
+    utility: null,
+    eligibleEntities: ["municipality", "commercial_fleet", "transit_agency", "tribal_government"],
+    eligibleHardware: ["dcfc", "level2"],
+    incentiveType: "grant",
+    justice40: true,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000003",
+    title: "Alternative Fuel Vehicle Refueling Property Credit (30C)",
+    slug: "30c-tax-credit",
+    description: "Federal tax credit covering up to 6% of the cost of qualified alternative fuel vehicle refueling property, with a maximum of $100,000 per item for commercial installations.",
+    amountMin: null,
+    amountMax: 10000000,
+    deadline: "2032-12-31",
+    status: "active",
+    sourceUrl: "https://www.irs.gov/credits-deductions/alternative-fuel-vehicle-refueling-property-credit",
+    funder: "Internal Revenue Service (IRS)",
+    jurisdiction: "federal",
+    state: null,
+    city: null,
+    utility: null,
+    eligibleEntities: ["commercial_fleet", "property_owner"],
+    eligibleHardware: ["dcfc", "level2"],
+    incentiveType: "tax_credit",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000004",
+    title: "Clean School Bus Program",
+    slug: "clean-school-bus-program",
+    description: "EPA's $5 billion program to replace existing school buses with zero-emission and low-emission models, including funding for charging infrastructure.",
+    amountMin: 250000,
+    amountMax: 375000,
+    deadline: "2026-08-01",
+    status: "active",
+    sourceUrl: "https://www.epa.gov/cleanschoolbus",
+    funder: "Environmental Protection Agency (EPA)",
+    jurisdiction: "federal",
+    state: null,
+    city: null,
+    utility: null,
+    eligibleEntities: ["school_district", "transit_agency"],
+    eligibleHardware: ["dcfc", "level2"],
+    incentiveType: "grant",
+    justice40: true,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000005",
+    title: "California Energy Commission — EnergIIZE Commercial Vehicles",
+    slug: "energiize-commercial-vehicles-ca",
+    description: "Provides vouchers for zero-emission vehicle charging infrastructure to support California's transition to zero-emission commercial vehicles.",
+    amountMin: 20000,
+    amountMax: 500000,
+    deadline: "2026-12-31",
+    status: "active",
+    sourceUrl: "https://energiize.org/",
+    funder: "California Energy Commission (CEC)",
+    jurisdiction: "state",
+    state: "CA",
+    city: null,
+    utility: null,
+    eligibleEntities: ["commercial_fleet"],
+    eligibleHardware: ["dcfc", "level2"],
+    incentiveType: "rebate",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000006",
+    title: "California HVIP — Hybrid and Zero-Emission Truck Voucher",
+    slug: "california-hvip",
+    description: "Provides point-of-sale vouchers for the purchase of clean trucks and buses, including infrastructure funding for associated charging equipment.",
+    amountMin: 50000,
+    amountMax: 375000,
+    deadline: null,
+    status: "active",
+    sourceUrl: "https://californiahvip.org/",
+    funder: "California Air Resources Board (CARB)",
+    jurisdiction: "state",
+    state: "CA",
+    city: null,
+    utility: null,
+    eligibleEntities: ["commercial_fleet", "transit_agency"],
+    eligibleHardware: ["dcfc"],
+    incentiveType: "rebate",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000007",
+    title: "SCE Charge Ready Transport Program",
+    slug: "sce-charge-ready-transport",
+    description: "Southern California Edison's make-ready program covering 100% of infrastructure costs for eligible medium and heavy-duty fleet charging installations.",
+    amountMin: null,
+    amountMax: null,
+    deadline: "2027-12-31",
+    status: "active",
+    sourceUrl: "https://www.sce.com/business/electric-cars/charge-ready-transport",
+    funder: "Southern California Edison (SCE)",
+    jurisdiction: "utility",
+    state: "CA",
+    city: null,
+    utility: "Southern California Edison",
+    eligibleEntities: ["commercial_fleet", "transit_agency", "school_district"],
+    eligibleHardware: ["dcfc", "level2"],
+    incentiveType: "make_ready",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000008",
+    title: "New York Truck Voucher Incentive Program (NYTVIP)",
+    slug: "nytvip",
+    description: "Provides vouchers to fleets purchasing or leasing new all-electric or hybrid electric trucks for use in New York State.",
+    amountMin: 50000,
+    amountMax: 185000,
+    deadline: "2026-09-30",
+    status: "active",
+    sourceUrl: "https://www.nyserda.ny.gov/All-Programs/Truck-Voucher-Program",
+    funder: "NYSERDA",
+    jurisdiction: "state",
+    state: "NY",
+    city: null,
+    utility: null,
+    eligibleEntities: ["commercial_fleet"],
+    eligibleHardware: ["dcfc", "level2"],
+    incentiveType: "rebate",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000009",
+    title: "Texas Emissions Reduction Plan (TERP) — Light-Duty Vehicle Grant",
+    slug: "terp-light-duty-grant-tx",
+    description: "Grants for the replacement of older vehicles with cleaner models, including EV charging infrastructure at fleet facilities.",
+    amountMin: 5000,
+    amountMax: 50000,
+    deadline: "2026-05-31",
+    status: "active",
+    sourceUrl: "https://www.tceq.texas.gov/airquality/terp",
+    funder: "Texas Commission on Environmental Quality (TCEQ)",
+    jurisdiction: "state",
+    state: "TX",
+    city: null,
+    utility: null,
+    eligibleEntities: ["commercial_fleet", "municipality"],
+    eligibleHardware: ["level2", "dcfc"],
+    incentiveType: "grant",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000010",
+    title: "Massachusetts MassEVIP — Fleets Incentives",
+    slug: "massevip-fleets-ma",
+    description: "Provides incentives for the purchase or lease of battery electric vehicles and Level 2 chargers for public and private fleets in Massachusetts.",
+    amountMin: 7500,
+    amountMax: 90000,
+    deadline: "2026-12-31",
+    status: "active",
+    sourceUrl: "https://www.mass.gov/how-to/apply-for-massevip-fleets-incentives",
+    funder: "Massachusetts DEP",
+    jurisdiction: "state",
+    state: "MA",
+    city: null,
+    utility: null,
+    eligibleEntities: ["commercial_fleet", "municipality", "school_district"],
+    eligibleHardware: ["level2"],
+    incentiveType: "rebate",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000011",
+    title: "Illinois EPA — EV Charging Rebate for Businesses",
+    slug: "il-ev-charging-rebate",
+    description: "Rebate program for Illinois businesses installing Level 2 or DC fast charging stations. Covers up to 80% of hardware and installation costs.",
+    amountMin: 2000,
+    amountMax: 150000,
+    deadline: "2026-07-15",
+    status: "active",
+    sourceUrl: "https://www2.illinois.gov/epa/topics/ceja/Pages/default.aspx",
+    funder: "Illinois EPA",
+    jurisdiction: "state",
+    state: "IL",
+    city: null,
+    utility: null,
+    eligibleEntities: ["commercial_fleet", "property_owner"],
+    eligibleHardware: ["dcfc", "level2"],
+    incentiveType: "rebate",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000012",
+    title: "Colorado EV Commercial Fleet Program",
+    slug: "colorado-ev-fleet-program",
+    description: "Grants for commercial fleet operators in Colorado to install EV charging infrastructure and purchase electric vehicles.",
+    amountMin: 25000,
+    amountMax: 200000,
+    deadline: "2026-10-31",
+    status: "active",
+    sourceUrl: "https://energyoffice.colorado.gov/transportation/ev-programs",
+    funder: "Colorado Energy Office",
+    jurisdiction: "state",
+    state: "CO",
+    city: null,
+    utility: null,
+    eligibleEntities: ["commercial_fleet"],
+    eligibleHardware: ["dcfc", "level2"],
+    incentiveType: "grant",
+    justice40: false,
+    source: "manual",
+    rawData: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+
+export const MOCK_INSTALLERS: Installer[] = [
+  {
+    id: "10000000-0000-0000-0000-000000000001",
+    userId: null,
+    companyName: "ChargePoint Commercial Services",
+    slug: "chargepoint-commercial-services",
+    description: "Leading EVSE installer specializing in commercial fleet charging infrastructure. Handles complete turnkey solutions from site assessment through procurement, installation, and ongoing maintenance.",
+    logoUrl: null,
+    website: "https://www.chargepoint.com",
+    phone: "(555) 100-2000",
+    email: "commercial@example-chargepoint.com",
+    serviceAreas: ["CA", "NY", "TX", "IL", "WA"],
+    hardwareTypes: ["level2", "dcfc"],
+    tier: "premium",
+    verified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "10000000-0000-0000-0000-000000000002",
+    userId: null,
+    companyName: "GreenFleet Electric",
+    slug: "greenfleet-electric",
+    description: "Specialized in municipal and transit fleet electrification. Expert in grant compliance documentation and utility coordination. Serving the Northeast corridor with Level 2 and DCFC installations.",
+    logoUrl: null,
+    website: "https://www.greenfleetelectric.com",
+    phone: "(555) 200-3000",
+    email: "info@example-greenfleet.com",
+    serviceAreas: ["NY", "MA", "CT", "NJ", "PA"],
+    hardwareTypes: ["level2", "dcfc"],
+    tier: "premium",
+    verified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "10000000-0000-0000-0000-000000000003",
+    userId: null,
+    companyName: "SunPower EV Infrastructure",
+    slug: "sunpower-ev-infrastructure",
+    description: "Combined solar and EV charging solutions for commercial properties. Specializes in DCFC installations with on-site solar generation to minimize demand charges and maximize ROI.",
+    logoUrl: null,
+    website: "https://www.sunpowerev.com",
+    phone: "(555) 300-4000",
+    email: "info@example-sunpowerev.com",
+    serviceAreas: ["CA", "AZ", "NV", "CO"],
+    hardwareTypes: ["dcfc"],
+    tier: "free",
+    verified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "10000000-0000-0000-0000-000000000004",
+    userId: null,
+    companyName: "Midwest Charge Solutions",
+    slug: "midwest-charge-solutions",
+    description: "Regional EV charging installer covering the Midwest. Expert in fleet depot charging, workplace installations, and utility rebate program navigation.",
+    logoUrl: null,
+    website: "https://www.midwestcharge.com",
+    phone: "(555) 400-5000",
+    email: "info@example-midwestcharge.com",
+    serviceAreas: ["IL", "WI", "MI", "IN", "OH"],
+    hardwareTypes: ["level2", "dcfc"],
+    tier: "free",
+    verified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "10000000-0000-0000-0000-000000000005",
+    userId: null,
+    companyName: "LoneStar EV Contractors",
+    slug: "lonestar-ev-contractors",
+    description: "Texas-based EVSE installation company specializing in commercial and fleet charging. Licensed electrical contractor with extensive experience in TCEQ grant-funded projects.",
+    logoUrl: null,
+    website: "https://www.lonestarev.com",
+    phone: "(555) 500-6000",
+    email: "info@example-lonestarev.com",
+    serviceAreas: ["TX", "OK", "LA"],
+    hardwareTypes: ["level2", "dcfc"],
+    tier: "premium",
+    verified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
+
+// Helper to filter mock grants (simplified version of the DB query)
+export function filterMockGrants(filters: {
+  search?: string;
+  jurisdiction?: string;
+  state?: string;
+  entityType?: string;
+  hardwareType?: string;
+  incentiveType?: string;
+  justice40?: boolean;
+  status?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const {
+    search,
+    jurisdiction,
+    state,
+    entityType,
+    hardwareType,
+    incentiveType,
+    justice40,
+    status = "active",
+    page = 1,
+    limit = 20,
+  } = filters;
+
+  let filtered = [...MOCK_GRANTS];
+
+  if (status && status !== "all") {
+    filtered = filtered.filter((g) => g.status === status);
+  }
+
+  if (search) {
+    const q = search.toLowerCase();
+    filtered = filtered.filter(
+      (g) =>
+        g.title.toLowerCase().includes(q) ||
+        g.description.toLowerCase().includes(q) ||
+        g.funder.toLowerCase().includes(q) ||
+        (g.state && g.state.toLowerCase().includes(q))
+    );
+  }
+
+  if (jurisdiction) {
+    filtered = filtered.filter((g) => g.jurisdiction === jurisdiction);
+  }
+
+  if (state) {
+    filtered = filtered.filter((g) => g.state === state.toUpperCase());
+  }
+
+  if (entityType) {
+    filtered = filtered.filter((g) => g.eligibleEntities.includes(entityType));
+  }
+
+  if (hardwareType) {
+    filtered = filtered.filter((g) => g.eligibleHardware.includes(hardwareType));
+  }
+
+  if (incentiveType) {
+    filtered = filtered.filter((g) => g.incentiveType === incentiveType);
+  }
+
+  if (justice40) {
+    filtered = filtered.filter((g) => g.justice40);
+  }
+
+  const total = filtered.length;
+  const offset = (page - 1) * limit;
+  const paged = filtered.slice(offset, offset + limit);
+
+  return {
+    grants: paged,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
+}
